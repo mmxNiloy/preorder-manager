@@ -12,6 +12,7 @@ export default function Providers({ children }: Readonly<Props>) {
       <ThemeProvider
         attribute="class"
         defaultTheme="light"
+        forcedTheme="light"
         enableSystem
         disableTransitionOnChange
       >

@@ -117,7 +117,7 @@ function DataTableShell<TData, TValue>({
 
       <div className="overflow-x-auto">
         <Table className="w-full min-w-195">
-          <TableHeader className="bg-muted/40">
+          <TableHeader className="bg-muted-dark">
             {table.getHeaderGroups().map((headerGroup: HeaderGroup<TData>) => (
               <TableRow
                 key={headerGroup.id}
