@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Preorder {
+  id           String       @id @default(cuid())
+  name         String       @unique
+  products     Int
+  preorderWhen PreorderWhen
+  startsAt     DateTime
+  endsAt       DateTime?
+  isActive     Boolean      @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// From the given image I've only deduced two options: OUT_OF_STOCK and REGARDLESS_OF_STOCK.
+// I took the liberty to add some more options to the enum.
+enum PreorderWhen {
+  BEFORE_RELEASE
+  AFTER_RELEASE
+  OUT_OF_STOCK
+  IN_STOCK
+  REGARDLESS_OF_STOCK
+}

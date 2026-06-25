@@ -1,0 +1,6 @@
+src/generated
+/.next/
+/node_modules/
+.env
+dev.db
+/test-data/
