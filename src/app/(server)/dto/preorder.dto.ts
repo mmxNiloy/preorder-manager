@@ -1,3 +1,4 @@
+import { PreorderWhen } from "@/src/generated/prisma/enums";
 import { z } from "zod";
 
 export const GetPreorderSchema = z.object({
@@ -26,3 +27,27 @@ export const GetPreorderSchema = z.object({
 });
 
 export type GetPreorderDto = z.infer<typeof GetPreorderSchema>;
+
+export const PreorderWhenValues = Object.values(PreorderWhen);
+
+export const CreatePreorderSchema = z.object({
+  name: z.string().min(1),
+  products: z.number().min(1),
+  preorderWhen: z.enum(PreorderWhenValues),
+  startsAt: z.date(),
+  endsAt: z.date().optional().nullable(),
+});
+
+export type CreatePreorderDto = z.infer<typeof CreatePreorderSchema>;
+
+export const emptyCreatePreorderDto: CreatePreorderDto = {
+  name: "",
+  products: 1,
+  preorderWhen: PreorderWhen.REGARDLESS_OF_STOCK,
+  startsAt: new Date(),
+  endsAt: null,
+};
+
+export const UpdatePreorderSchema = CreatePreorderSchema.partial();
+
+export type UpdatePreorderDto = z.infer<typeof UpdatePreorderSchema>;

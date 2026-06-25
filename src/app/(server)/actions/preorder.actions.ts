@@ -1,9 +1,17 @@
 "use server";
 
 import { Preorder, Prisma } from "@/src/generated/prisma/client";
-import { ActionError, GetPreorderDto, Page } from "../dto";
+import {
+  ActionError,
+  ActionResponse,
+  CreatePreorderDto,
+  GetPreorderDto,
+  Page,
+  UpdatePreorderDto,
+} from "../dto";
 import { prisma } from "@/src/lib/prisma";
 import { ActionErrorFilter } from "../filters";
+import { revalidatePath } from "next/cache";
 
 export async function getPreorders(
   dto: GetPreorderDto,
@@ -44,6 +52,7 @@ export async function getPreorders(
     return {
       ok: true,
       data: preorders,
+      message: "Preorders fetched successfully",
       meta: {
         total,
         page: safePage,
@@ -55,5 +64,89 @@ export async function getPreorders(
     };
   } catch (err) {
     return ActionErrorFilter.fromError(err, "getPreorders");
+  }
+}
+
+export async function getPreorderById(
+  id: string,
+): Promise<ActionResponse<Preorder> | ActionError> {
+  try {
+    const preorder = await prisma.preorder.findUniqueOrThrow({
+      where: { id },
+    });
+
+    return {
+      ok: true,
+      data: preorder,
+      message: "Preorder fetched successfully",
+    };
+  } catch (err) {
+    return ActionErrorFilter.fromError(err, "getPreorderById");
+  }
+}
+
+export async function createPreorder(
+  dto: CreatePreorderDto,
+): Promise<ActionResponse<Preorder> | ActionError> {
+  try {
+    const preorder = await prisma.preorder.create({
+      data: dto,
+    });
+
+    revalidatePath("/");
+
+    return {
+      ok: true,
+      data: preorder,
+      message: "Preorder created successfully",
+    };
+  } catch (err) {
+    return ActionErrorFilter.fromError(err, "createPreorder");
+  }
+}
+
+export async function updatePreorder(
+  id: string,
+  dto: UpdatePreorderDto,
+): Promise<ActionResponse<Preorder> | ActionError> {
+  try {
+    const preorder = await prisma.preorder.update({
+      where: { id },
+      data: dto,
+    });
+
+    revalidatePath("/");
+    revalidatePath(`/preorder/${id}`);
+
+    return {
+      ok: true,
+      data: preorder,
+      message: "Preorder updated successfully",
+    };
+  } catch (err) {
+    return ActionErrorFilter.fromError(err, "updatePreorder");
+  }
+}
+
+export async function deletePreorder(
+  id: string,
+): Promise<ActionResponse<Preorder> | ActionError> {
+  try {
+    const preorder = await prisma.preorder.delete({
+      where: {
+        id,
+      },
+    });
+
+    revalidatePath("/");
+    revalidatePath(`/preorder/${id}`);
+
+    return {
+      ok: true,
+      data: preorder,
+      message: "Preorder deleted successfully",
+    };
+  } catch (err) {
+    return ActionErrorFilter.fromError(err, "deletePreorder");
   }
 }

@@ -3,6 +3,7 @@ import {
   PreorderListingSkeleton,
 } from "@/components/custom";
 import { Button } from "@/components/ui/button";
+import { SiteConfig } from "@/constants/site.config";
 import { searchParamsCache, serialize } from "@/lib/searchparams";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -11,14 +12,9 @@ import { Suspense } from "react";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "Preorder Manager",
-    description: "Manage your preorders",
-    authors: [
-      {
-        name: "Ashirbad Sarkar",
-        url: "https://ashirbadsarkar.vercel.app",
-      },
-    ],
+    title: SiteConfig.meta.title,
+    description: SiteConfig.meta.description,
+    authors: SiteConfig.meta.authors,
   };
 }
 

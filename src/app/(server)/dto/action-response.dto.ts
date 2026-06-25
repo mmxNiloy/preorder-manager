@@ -1,6 +1,7 @@
 export interface ActionResponse<T> {
   ok: true;
   data: T;
+  message?: string;
 }
 
 export interface ActionError {
