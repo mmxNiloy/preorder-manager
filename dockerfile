@@ -2,6 +2,7 @@
 
 ARG NODE_VERSION=26.4.0
 ARG ALPINE_VERSION=3.23
+ARG PNPM_VERSION=10.16.1
 
 ################################################################################
 # Base image
@@ -10,10 +11,7 @@ FROM node:${NODE_VERSION}-alpine${ALPINE_VERSION} AS base
 WORKDIR /usr/src/app
 
 # Install pnpm
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-
-RUN corepack enable
+RUN npm install -g pnpm@${PNPM_VERSION}
 
 ################################################################################
 # Install dependencies
