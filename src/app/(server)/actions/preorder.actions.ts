@@ -17,7 +17,13 @@ export async function getPreorders(
   dto: GetPreorderDto,
 ): Promise<Page<Preorder> | ActionError> {
   try {
-    const { page, limit, isActive, sortBy, sortOrder } = dto;
+    const {
+      page,
+      limit,
+      isActive,
+      sortBy = "createdAt",
+      sortOrder = "desc",
+    } = dto;
 
     const safePage = page ?? 1;
     const safeLimit = limit ?? 10;
@@ -32,7 +38,7 @@ export async function getPreorders(
     }
 
     if (sortBy !== null && sortBy !== undefined) {
-      orderBy[sortBy] = sortOrder ?? "asc";
+      orderBy[sortBy ?? "createdAt"] = sortOrder ?? "desc";
     }
 
     const [preorders, total] = await Promise.all([

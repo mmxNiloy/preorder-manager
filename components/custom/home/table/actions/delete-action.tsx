@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { deletePreorder } from "@/src/app/(server)";
 import { Loader2, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useCallback, useState, useTransition } from "react";
 import { toast } from "sonner";
 
@@ -24,6 +25,7 @@ type Props = {
 export default function DeleteAction({ id }: Props) {
   const [open, setOpen] = useState(false);
   const [loading, startDelete] = useTransition();
+  const router = useRouter();
 
   const handleDelete = useCallback(() => {
     startDelete(async () => {
@@ -33,6 +35,7 @@ export default function DeleteAction({ id }: Props) {
         if (res.ok) {
           toast.success(res.message);
           setOpen(false);
+          router.refresh();
           return;
         }
 
@@ -45,7 +48,7 @@ export default function DeleteAction({ id }: Props) {
         toast.error("Failed to delete the preorder. Please try again.");
       }
     });
-  }, [id]);
+  }, [id, router]);
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>

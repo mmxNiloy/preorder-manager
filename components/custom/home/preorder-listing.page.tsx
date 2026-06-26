@@ -1,13 +1,8 @@
-import { Card, CardContent } from "@/components/ui/card";
 import { DataTableError } from "@/components/ui/data-table";
-
-import PreorderListingPagination from "./preorder-listing-pagination";
-import { Toolbar } from "./toolbar";
 import PreorderTable from "./table/preorder-table";
 import { getPreorders, GetPreorderSchema } from "@/src/app/(server)";
 import { searchParamsCache } from "@/lib/searchparams";
-
-const PAGE_SIZE = 10;
+import ListingShell from "./preorder-listing-shell";
 
 export default async function PreorderListingPage() {
   const page = searchParamsCache.get("page");
@@ -17,7 +12,6 @@ export default async function PreorderListingPage() {
 
   const dto = GetPreorderSchema.safeParse({
     page,
-    limit: PAGE_SIZE,
     isActive,
     sortBy,
     sortOrder,
@@ -25,17 +19,12 @@ export default async function PreorderListingPage() {
 
   if (!dto.success) {
     return (
-      <Card className="py-0 shadow-sm">
-        <CardContent className="p-0">
-          <div className="border-b px-4 py-3">
-            <Toolbar />
-          </div>
-          <DataTableError message="No data found" />
-          <div className="border-t px-4 py-4 bg-muted-dark">
-            <PreorderListingPagination total={0} page={1} pageCount={1} />
-          </div>
-        </CardContent>
-      </Card>
+      <ListingShell>
+        <DataTableError
+          message="Invalid filters"
+          subtitle="Try resetting your filters or return to the first page."
+        />
+      </ListingShell>
     );
   }
 
@@ -43,38 +32,22 @@ export default async function PreorderListingPage() {
 
   if (!preorders.ok) {
     return (
-      <Card className="py-0 shadow-sm">
-        <CardContent className="p-0">
-          <div className="border-b px-4 py-3">
-            <Toolbar />
-          </div>
-          <DataTableError message="No data found" />
-          <div className="border-t px-4 py-4 bg-muted-dark">
-            <PreorderListingPagination total={0} page={1} pageCount={1} />
-          </div>
-        </CardContent>
-      </Card>
+      <ListingShell>
+        <DataTableError
+          message="Failed to load preorders"
+          subtitle={preorders.message}
+        />
+      </ListingShell>
     );
   }
 
   return (
-    <Card className="py-0 shadow-sm">
-      <CardContent className="p-0">
-        <div className="border-b px-4 py-3">
-          <Toolbar />
-        </div>
-
-        <PreorderTable preorders={preorders} />
-
-        <div className="border-t px-4 py-4 bg-muted-dark">
-          <PreorderListingPagination
-            total={preorders.meta.total}
-            page={preorders.meta.page}
-            pageCount={preorders.meta.pageCount}
-            pageSize={PAGE_SIZE}
-          />
-        </div>
-      </CardContent>
-    </Card>
+    <ListingShell
+      total={preorders.meta.total}
+      page={preorders.meta.page}
+      pageCount={preorders.meta.pageCount}
+    >
+      <PreorderTable preorders={preorders} />
+    </ListingShell>
   );
 }

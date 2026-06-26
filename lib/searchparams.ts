@@ -29,7 +29,7 @@ export const searchParams = {
     },
   }),
   sortBy: parseAsStringEnum(["name", "createdAt", "startsAt", "endsAt"])
-    .withDefault("name")
+    .withDefault("createdAt")
     .withOptions({
       shallow: false,
       limitUrlUpdates: {
@@ -38,7 +38,7 @@ export const searchParams = {
       },
     }),
   sortOrder: parseAsStringEnum(["asc", "desc"])
-    .withDefault("asc")
+    .withDefault("desc")
     .withOptions({
       shallow: false,
       limitUrlUpdates: {

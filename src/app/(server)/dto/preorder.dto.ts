@@ -17,13 +17,13 @@ export const GetPreorderSchema = z.object({
     .optional()
     .nullable()
     .catch(null)
-    .default("name"),
+    .default("createdAt"),
   sortOrder: z
     .enum(["asc", "desc"])
     .optional()
     .nullable()
     .catch(null)
-    .default("asc"),
+    .default("desc"),
 });
 
 export type GetPreorderDto = z.infer<typeof GetPreorderSchema>;

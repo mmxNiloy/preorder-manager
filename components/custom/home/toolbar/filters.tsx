@@ -18,6 +18,7 @@ import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import { useQueryState } from "nuqs";
 
 export default function Filters() {
+  const [, setPage] = useQueryState("page", searchParams.page);
   const [sortBy, setSortBy] = useQueryState("sortBy", searchParams.sortBy);
 
   const [sortOrder, setSortOrder] = useQueryState(
@@ -39,7 +40,10 @@ export default function Filters() {
           <DropdownMenuLabel className="text-sm">Sort by</DropdownMenuLabel>
           <RadioGroup
             value={sortBy}
-            onValueChange={(value) => setSortBy(value)}
+            onValueChange={(value) => {
+              setSortBy(value);
+              setPage(1);
+            }}
             className="*:flex *:gap-2 px-2 space-y-2"
           >
             <div>
@@ -68,14 +72,20 @@ export default function Filters() {
 
         <DropdownMenuGroup className="mt-4">
           <DropdownMenuItem
-            onClick={() => setSortOrder("asc")}
+            onClick={() => {
+              setSortOrder("asc");
+              setPage(1);
+            }}
             className={cn("h-8", sortOrder === "asc" && "bg-muted")}
           >
             <ArrowUp />
             Ascending
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={() => setSortOrder("desc")}
+            onClick={() => {
+              setSortOrder("desc");
+              setPage(1);
+            }}
             className={cn("h-8", sortOrder === "desc" && "bg-muted")}
           >
             <ArrowDown />
