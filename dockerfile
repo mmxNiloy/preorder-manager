@@ -48,8 +48,7 @@ ENV NODE_ENV=production
 COPY --from=build /usr/src/app/package.json ./
 COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/.next ./.next
-
-USER node
+COPY --from=build /usr/src/app/prisma ./prisma
 
 EXPOSE 3000
 
@@ -58,5 +57,7 @@ COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 ENTRYPOINT ["docker-entrypoint.sh"]
+
+USER node
 
 CMD ["pnpm", "run", "start"]
