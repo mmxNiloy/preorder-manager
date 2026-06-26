@@ -24,6 +24,7 @@ import {
   type ColumnDef,
   type Header,
   type HeaderGroup,
+  type RowSelectionState,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
@@ -34,6 +35,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { parseAsInteger, useQueryState } from "nuqs";
+import { DataTableError } from "./data-table-error";
 import TableHeaderCell from "./table-header-cell";
 
 export interface DataTableProps<TData, TValue> {
@@ -49,6 +51,14 @@ export interface DataTableProps<TData, TValue> {
   emptyStateMessage?: string;
   /** When false, pagination is kept in component state (avoids clobbering URL `page` / `limit`). */
   syncPaginationToUrl?: boolean;
+  /** Renders only the table without card chrome — for use inside parent Card layouts. */
+  embedded?: boolean;
+  /** Fixed page size; disables rows-per-page selector and optional limit URL sync. */
+  fixedPageSize?: number;
+  /** Show built-in footer pagination. Defaults to true unless embedded. */
+  showPagination?: boolean;
+  /** Enable row selection state for checkbox columns (UI only). */
+  enableRowSelection?: boolean;
 }
 
 type DataTableShellProps<TData, TValue> = {
@@ -64,6 +74,8 @@ type DataTableShellProps<TData, TValue> = {
   emptyStateMessage: string;
   limit: number;
   onPageSizeChange: (next: number) => void;
+  embedded: boolean;
+  showPagination: boolean;
 };
 
 function DataTableShell<TData, TValue>({
@@ -79,11 +91,77 @@ function DataTableShell<TData, TValue>({
   emptyStateMessage,
   limit,
   onPageSizeChange,
+  embedded,
+  showPagination,
 }: DataTableShellProps<TData, TValue>) {
   const totalPages = Math.max(pageCount, 1);
   const currentPage = table.getState().pagination.pageIndex + 1;
   const pageStart = totalItems === 0 ? 0 : (currentPage - 1) * limit + 1;
   const pageEnd = Math.min(currentPage * limit, totalItems);
+
+  const tableContent = (
+  <div className="overflow-x-auto">
+    <Table className="w-full min-w-195">
+      <TableHeader className="border-b border-border/60">
+        {table.getHeaderGroups().map((headerGroup: HeaderGroup<TData>) => (
+          <TableRow
+            key={headerGroup.id}
+            className="border-border/70 hover:bg-transparent"
+          >
+            {headerGroup.headers.map((header: Header<TData, unknown>) => (
+              <TableHead
+                key={header.id}
+                className="px-4 py-3 text-left text-sm font-medium text-muted-foreground"
+              >
+                <TableHeaderCell>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
+                </TableHeaderCell>
+              </TableHead>
+            ))}
+          </TableRow>
+        ))}
+      </TableHeader>
+      <TableBody>
+        {table.getRowModel().rows?.length ? (
+          table.getRowModel().rows.map((row: Row<TData>) => (
+            <TableRow
+              key={row.id}
+              className="border-b border-border/40 hover:bg-transparent"
+              data-state={row.getIsSelected() ? "selected" : undefined}
+            >
+              {row.getVisibleCells().map((cell: Cell<TData, unknown>) => (
+                <TableCell
+                  key={cell.id}
+                  className="px-4 py-3.5 text-sm text-muted-foreground"
+                >
+                  {flexRender(
+                    cell.column.columnDef.cell,
+                    cell.getContext(),
+                  )}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))
+        ) : (
+          <TableRow className="hover:bg-transparent">
+            <TableCell colSpan={columns.length} className="p-0">
+              <DataTableError message={emptyStateMessage} />
+            </TableCell>
+          </TableRow>
+        )}
+      </TableBody>
+    </Table>
+  </div>
+  );
+
+  if (embedded) {
+    return tableContent;
+  }
 
   return (
     <section className="rounded-xl border border-border bg-card [&_button]:cursor-pointer [&_select]:cursor-pointer [&_input]:cursor-pointer">
@@ -115,136 +193,123 @@ function DataTableShell<TData, TValue>({
         </header>
       )}
 
-      <div className="overflow-x-auto">
-        <Table className="w-full min-w-195">
-          <TableHeader className="bg-muted-dark">
-            {table.getHeaderGroups().map((headerGroup: HeaderGroup<TData>) => (
-              <TableRow
-                key={headerGroup.id}
-                className="border-border/70 hover:bg-transparent"
+      {tableContent}
+
+      {showPagination ? (
+        <footer className="flex flex-col gap-3 border-t border-border/80 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <div className="text-muted-foreground">
+            Showing {pageStart}-{pageEnd} of {totalItems}
+          </div>
+
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-muted-foreground">
+                Rows per page
+              </span>
+              <Select
+                value={String(limit)}
+                onValueChange={(value) => {
+                  onPageSizeChange(Number(value));
+                }}
               >
-                {headerGroup.headers.map((header: Header<TData, unknown>) => (
-                  <TableHead
-                    key={header.id}
-                    className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground"
-                  >
-                    <TableHeaderCell>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHeaderCell>
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody className="divide-y divide-border/70">
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row: Row<TData>) => (
-                <TableRow
-                  key={row.id}
-                  className="cursor-pointer border-0 hover:bg-muted/20"
-                  data-state={row.getIsSelected() ? "selected" : undefined}
+                <SelectTrigger
+                  className={cn(
+                    "h-8 w-[4.5rem] rounded-md border border-input bg-background px-2 text-sm text-muted-foreground shadow-none",
+                    "focus:ring-2 focus:ring-primary/20",
+                  )}
                 >
-                  {row.getVisibleCells().map((cell: Cell<TData, unknown>) => (
-                    <TableCell
-                      key={cell.id}
-                      className="px-4 py-3 text-sm text-muted-foreground"
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
+                  <SelectValue placeholder={String(limit)} />
+                </SelectTrigger>
+                <SelectContent side="top">
+                  {pageSizeOptions.map((opt) => (
+                    <SelectItem key={opt} value={String(opt)}>
+                      {opt}
+                    </SelectItem>
                   ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow className="hover:bg-transparent">
-                <TableCell
-                  colSpan={columns.length}
-                  className="px-4 py-8 text-center text-sm text-muted-foreground"
-                >
-                  {emptyStateMessage}
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+                </SelectContent>
+              </Select>
+            </div>
 
-      <footer className="flex flex-col gap-3 border-t border-border/80 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-6">
-        <div className="text-muted-foreground">
-          Showing {pageStart}-{pageEnd} of {totalItems}
-        </div>
-
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-muted-foreground">
-              Rows per page
-            </span>
-            <Select
-              value={String(limit)}
-              onValueChange={(value) => {
-                onPageSizeChange(Number(value));
-              }}
-            >
-              <SelectTrigger
-                className={cn(
-                  "h-8 w-[4.5rem] rounded-md border border-input bg-background px-2 text-sm text-muted-foreground shadow-none",
-                  "focus:ring-2 focus:ring-primary/20",
-                )}
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  table.previousPage();
+                }}
+                disabled={!table.getCanPreviousPage()}
+                className="text-muted-foreground"
               >
-                <SelectValue placeholder={String(limit)} />
-              </SelectTrigger>
-              <SelectContent side="top">
-                {pageSizeOptions.map((opt) => (
-                  <SelectItem key={opt} value={String(opt)}>
-                    {opt}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                Previous
+              </Button>
+
+              <span className="min-w-20 text-center text-xs font-medium text-muted-foreground">
+                Page {currentPage} of {totalPages}
+              </span>
+
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  table.nextPage();
+                }}
+                disabled={!table.getCanNextPage()}
+                className="text-muted-foreground"
+              >
+                Next
+              </Button>
+            </div>
           </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                table.previousPage();
-              }}
-              disabled={!table.getCanPreviousPage()}
-              className="text-muted-foreground"
-            >
-              Previous
-            </Button>
-
-            <span className="min-w-20 text-center text-xs font-medium text-muted-foreground">
-              Page {currentPage} of {totalPages}
-            </span>
-
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                table.nextPage();
-              }}
-              disabled={!table.getCanNextPage()}
-              className="text-muted-foreground"
-            >
-              Next
-            </Button>
-          </div>
-        </div>
-      </footer>
+        </footer>
+      ) : null}
     </section>
   );
+}
+
+type DataTableInnerProps<TData, TValue> = Omit<
+  DataTableProps<TData, TValue>,
+  "syncPaginationToUrl"
+>;
+
+function useDataTableInstance<TData, TValue>({
+  columns,
+  data,
+  pageCount = 1,
+  fixedPageSize,
+  enableRowSelection = false,
+  paginationState,
+  onPaginationChange,
+  rowSelection,
+  onRowSelectionChange,
+}: {
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+  pageCount?: number;
+  fixedPageSize?: number;
+  enableRowSelection?: boolean;
+  paginationState: PaginationState;
+  onPaginationChange: OnChangeFn<PaginationState>;
+  rowSelection: RowSelectionState;
+  onRowSelectionChange: OnChangeFn<RowSelectionState>;
+}) {
+  return useReactTable({
+    data,
+    columns,
+    pageCount,
+    state: {
+      pagination: paginationState,
+      rowSelection,
+    },
+    enableRowSelection,
+    onPaginationChange,
+    onRowSelectionChange,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    manualPagination: true,
+    manualFiltering: true,
+  });
 }
 
 function DataTableUrl<TData, TValue>({
@@ -257,8 +322,16 @@ function DataTableUrl<TData, TValue>({
   description,
   headerActions,
   renderHeaderActionContainer = true,
-  emptyStateMessage = "No records found.",
-}: Omit<DataTableProps<TData, TValue>, "syncPaginationToUrl">) {
+  emptyStateMessage = "No data found",
+  embedded = false,
+  fixedPageSize,
+  showPagination,
+  enableRowSelection = false,
+}: DataTableInnerProps<TData, TValue>) {
+  const resolvedPageSize =
+    fixedPageSize ??
+    (pageSizeOptions.includes(10) ? 10 : (pageSizeOptions[0] ?? 10));
+
   const [currentPage, setCurrentPage] = useQueryState(
     "page",
     parseAsInteger.withOptions({ shallow: false }).withDefault(1),
@@ -267,12 +340,16 @@ function DataTableUrl<TData, TValue>({
     "limit",
     parseAsInteger
       .withOptions({ shallow: false, history: "push" })
-      .withDefault(10),
+      .withDefault(resolvedPageSize),
   );
+
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+
+  const effectivePageSize = fixedPageSize ?? pageSize;
 
   const paginationState: PaginationState = {
     pageIndex: currentPage - 1,
-    pageSize,
+    pageSize: effectivePageSize,
   };
 
   const handlePaginationChange: OnChangeFn<PaginationState> = (
@@ -284,21 +361,21 @@ function DataTableUrl<TData, TValue>({
         : updaterOrValue;
 
     void setCurrentPage(next.pageIndex + 1);
-    void setPageSize(next.pageSize);
+    if (!fixedPageSize) {
+      void setPageSize(next.pageSize);
+    }
   };
 
-  const table = useReactTable({
-    data,
+  const table = useDataTableInstance({
     columns,
+    data,
     pageCount,
-    state: {
-      pagination: paginationState,
-    },
+    fixedPageSize,
+    enableRowSelection,
+    paginationState,
     onPaginationChange: handlePaginationChange,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    manualPagination: true,
-    manualFiltering: true,
+    rowSelection,
+    onRowSelectionChange: setRowSelection,
   });
 
   return (
@@ -313,11 +390,13 @@ function DataTableUrl<TData, TValue>({
       headerActions={headerActions}
       renderHeaderActionContainer={renderHeaderActionContainer}
       emptyStateMessage={emptyStateMessage}
-      limit={pageSize}
+      limit={effectivePageSize}
       onPageSizeChange={(next) => {
         table.setPageIndex(0);
         table.setPageSize(next);
       }}
+      embedded={embedded}
+      showPagination={showPagination ?? !embedded}
     />
   );
 }
@@ -332,33 +411,37 @@ function DataTableLocal<TData, TValue>({
   description,
   headerActions,
   renderHeaderActionContainer = true,
-  emptyStateMessage = "No records found.",
-}: Omit<DataTableProps<TData, TValue>, "syncPaginationToUrl">) {
-  const defaultSize = pageSizeOptions.includes(10)
-    ? 10
-    : (pageSizeOptions[0] ?? 10);
+  emptyStateMessage = "No data found",
+  embedded = false,
+  fixedPageSize,
+  showPagination,
+  enableRowSelection = false,
+}: DataTableInnerProps<TData, TValue>) {
+  const defaultSize =
+    fixedPageSize ??
+    (pageSizeOptions.includes(10) ? 10 : (pageSizeOptions[0] ?? 10));
+
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: defaultSize,
   });
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   const derivedPageCount =
     pagination.pageSize > 0
       ? Math.max(1, Math.ceil(totalItems / pagination.pageSize))
       : Math.max(pageCountProp, 1);
 
-  const table = useReactTable({
-    data,
+  const table = useDataTableInstance({
     columns,
+    data,
     pageCount: derivedPageCount,
-    state: {
-      pagination,
-    },
+    fixedPageSize,
+    enableRowSelection,
+    paginationState: pagination,
     onPaginationChange: setPagination,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    manualPagination: true,
-    manualFiltering: true,
+    rowSelection,
+    onRowSelectionChange: setRowSelection,
   });
 
   return (
@@ -377,6 +460,8 @@ function DataTableLocal<TData, TValue>({
       onPageSizeChange={(next) => {
         setPagination((p) => ({ ...p, pageIndex: 0, pageSize: next }));
       }}
+      embedded={embedded}
+      showPagination={showPagination ?? !embedded}
     />
   );
 }

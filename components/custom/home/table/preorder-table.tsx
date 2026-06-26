@@ -14,6 +14,10 @@ export default function PreorderTable({ preorders }: Props) {
       totalItems={preorders.meta.total}
       pageCount={preorders.meta.pageCount}
       columns={columns}
+      embedded
+      showPagination={false}
+      fixedPageSize={10}
+      enableRowSelection
     />
   );
 }

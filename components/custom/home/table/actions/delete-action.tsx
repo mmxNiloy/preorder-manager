@@ -51,7 +51,7 @@ export default function DeleteAction({ id }: Props) {
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger
         render={
-          <Button variant="outline" size="icon">
+          <Button variant="outline" size="icon-sm">
             <Trash2 />
           </Button>
         }

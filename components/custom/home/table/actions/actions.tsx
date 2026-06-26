@@ -9,12 +9,10 @@ type Props = {
 
 export default function Actions({ id }: Props) {
   return (
-    <div className="flex gap-4">
-      <Link href={`/preorder/${id}`} passHref>
-        <Button variant="outline" size="icon">
-          <Pencil />
-        </Button>
-      </Link>
+    <div className="flex items-center gap-2">
+      <Button variant="outline" size="icon-sm" render={<Link href={`/preorder/${id}`} />}>
+        <Pencil />
+      </Button>
 
       <DeleteAction id={id} />
     </div>

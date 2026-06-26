@@ -14,7 +14,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable, rubik.variable)}>
+    <html
+      lang="en"
+      className={cn(
+        "font-sans",
+        geist.variable,
+        rubik.variable,
+        rubik.className,
+      )}
+    >
       <body className="antialiased">
         <main>
           <Providers>{children}</Providers>

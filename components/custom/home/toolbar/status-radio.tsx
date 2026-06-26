@@ -1,7 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { searchParams } from "@/lib/searchparams";
 import { useQueryState } from "nuqs";
@@ -32,10 +30,28 @@ export default function StatusRadio() {
 
   return (
     <Tabs value={value} onValueChange={handleValueChange}>
-      <TabsList className="gap-2 bg-transparent *:px-4">
-        <TabsTrigger value="all">All</TabsTrigger>
-        <TabsTrigger value="active">Active</TabsTrigger>
-        <TabsTrigger value="inactive">Inactive</TabsTrigger>
+      <TabsList
+        variant="line"
+        className="h-auto gap-1 bg-transparent p-0"
+      >
+        <TabsTrigger
+          value="all"
+          className="rounded-lg px-4 py-1.5 data-active:bg-muted data-active:shadow-none"
+        >
+          All
+        </TabsTrigger>
+        <TabsTrigger
+          value="active"
+          className="rounded-lg px-4 py-1.5 data-active:bg-muted data-active:shadow-none"
+        >
+          Active
+        </TabsTrigger>
+        <TabsTrigger
+          value="inactive"
+          className="rounded-lg px-4 py-1.5 data-active:bg-muted data-active:shadow-none"
+        >
+          Inactive
+        </TabsTrigger>
       </TabsList>
     </Tabs>
   );

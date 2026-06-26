@@ -1,5 +1,6 @@
 "use client";
 
+import { Checkbox } from "@/components/ui/checkbox";
 import { Preorder } from "@/src/generated/prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { Actions } from "./actions";
@@ -7,10 +8,37 @@ import DateTimeContainer from "./date-time-container";
 import EnumContainer from "./enum-container";
 import ToggleAction from "./actions/toggle-action";
 
+export { PREORDER_TABLE_HEADERS } from "./headers";
+
 export const columns: ColumnDef<Preorder>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={table.getIsAllPageRowsSelected()}
+        indeterminate={table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()}
+        onCheckedChange={(value) =>
+          table.toggleAllPageRowsSelected(value === true)
+        }
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(value === true)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
   {
     accessorKey: "name",
     header: "Name",
+    cell: ({ row }) => (
+      <span className="font-semibold text-foreground">{row.original.name}</span>
+    ),
   },
   {
     accessorKey: "products",
@@ -18,7 +46,7 @@ export const columns: ColumnDef<Preorder>[] = [
   },
   {
     accessorKey: "preorderWhen",
-    header: "Preorder When",
+    header: "Preorder when",
     cell: ({ row }) => (
       <EnumContainer
         value={row.original.preorderWhen}
@@ -28,22 +56,22 @@ export const columns: ColumnDef<Preorder>[] = [
   },
   {
     accessorKey: "startsAt",
-    header: "Starts At",
+    header: "Starts at",
     cell: ({ row }) => <DateTimeContainer date={row.original.startsAt} />,
   },
   {
     accessorKey: "endsAt",
-    header: "Ends At",
+    header: "Ends at",
     cell: ({ row }) => <DateTimeContainer date={row.original.endsAt} />,
   },
   {
     accessorKey: "isActive",
-    header: "Status",
+    header: "",
     cell: ({ row }) => <ToggleAction data={row.original} />,
   },
   {
     id: "actions",
-    header: "Actions",
+    header: "",
     cell: ({ row }) => <Actions id={row.original.id} />,
   },
 ];

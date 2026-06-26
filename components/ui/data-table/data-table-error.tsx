@@ -1,47 +1,21 @@
-"use client";
+import { PackageOpen } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Loader, RefreshCw } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useCallback, useTransition } from "react";
+type DataTableErrorProps = {
+  message?: string;
+  subtitle?: string;
+};
 
 export function DataTableError({
-  errorMessage = "Failed to load data",
-}: {
-  errorMessage?: string;
-}) {
-  const [loading, startRetry] = useTransition();
-  const router = useRouter();
-
-  const onRetry = useCallback(() => {
-    startRetry(() => {
-      router.refresh();
-    });
-  }, [router]);
-
+  message = "No data found",
+  subtitle,
+}: DataTableErrorProps) {
   return (
-    <section className="rounded-xl border border-destructive/30 bg-destructive/5 p-6">
-      <h2 className="text-lg font-semibold text-destructive">
-        {errorMessage}
-      </h2>
-      <p className="mt-2 text-sm text-muted-foreground">
-        Please check connectivity and try again.
-      </p>
-      <Button
-        type="button"
-        variant="outline"
-        className="mt-4"
-        title="Try again"
-        disabled={loading}
-        onClick={onRetry}
-      >
-        {loading ? (
-          <Loader className="size-4 animate-spin" />
-        ) : (
-          <RefreshCw className="size-4" />
-        )}{" "}
-        Try again
-      </Button>
-    </section>
+    <div className="flex flex-col items-center justify-center gap-3 py-16">
+      <PackageOpen className="size-10 text-muted-foreground" strokeWidth={1.5} />
+      <p className="text-sm font-medium text-foreground">{message}</p>
+      {subtitle ? (
+        <p className="text-sm text-muted-foreground">{subtitle}</p>
+      ) : null}
+    </div>
   );
 }
