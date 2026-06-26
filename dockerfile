@@ -10,6 +10,8 @@ FROM node:${NODE_VERSION}-alpine${ALPINE_VERSION} AS base
 
 WORKDIR /usr/src/app
 
+RUN chown -R node:node /usr/src/app
+
 # Install pnpm
 RUN npm install -g pnpm@${PNPM_VERSION}
 
