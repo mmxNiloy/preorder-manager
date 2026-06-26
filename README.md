@@ -28,13 +28,23 @@ A small Next.js app to list, filter, sort, and manage product preorders. It has 
 
 **Prerequisites:** Node.js 20+, pnpm 10
 
-Create a `.env` file in the project root:
+### Install node/npm
+
+Follow this url to download and install Node.js [https://nodejs.org/en/download/current](Node.js)
+
+### Install pnpm
+
+```bash
+npm i -g pnpm@latest
+```
+
+### Create a `.env` file in the project root:
 
 ```env
 DATABASE_URL="file:./dev.db"
 ```
 
-Then install, migrate, seed, and run:
+### Then install, migrate, seed, and run:
 
 ```bash
 pnpm install
@@ -45,7 +55,7 @@ pnpm db:seed
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+### Open [http://localhost:3000](http://localhost:3000).
 
 ### Scripts
 
@@ -58,7 +68,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | `db:generate`     | Regenerate Prisma client            |
 | `lint`            | ESLint                              |
 
-`postinstall` runs `prisma generate` only. Migrations and seeding are explicit locally.
+**`postinstall` runs `prisma generate` only. Migrations and seeding are explicit locally.**
 
 ## Project Structure
 
