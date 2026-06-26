@@ -5,6 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Actions } from "./actions";
 import DateTimeContainer from "./date-time-container";
 import EnumContainer from "./enum-container";
+import ToggleAction from "./actions/toggle-action";
 
 export const columns: ColumnDef<Preorder>[] = [
   {
@@ -18,7 +19,12 @@ export const columns: ColumnDef<Preorder>[] = [
   {
     accessorKey: "preorderWhen",
     header: "Preorder When",
-    cell: ({ row }) => <EnumContainer value={row.original.preorderWhen} />,
+    cell: ({ row }) => (
+      <EnumContainer
+        value={row.original.preorderWhen}
+        className="inline-block"
+      />
+    ),
   },
   {
     accessorKey: "startsAt",
@@ -33,7 +39,7 @@ export const columns: ColumnDef<Preorder>[] = [
   {
     accessorKey: "isActive",
     header: "Status",
-    // TODO: Custom toggle cell
+    cell: ({ row }) => <ToggleAction data={row.original} />,
   },
   {
     id: "actions",
