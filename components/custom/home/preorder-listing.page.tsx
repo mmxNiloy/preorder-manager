@@ -31,7 +31,7 @@ export default async function PreorderListingPage() {
             <Toolbar />
           </div>
           <DataTableError message="No data found" />
-          <div className="border-t px-4 py-4">
+          <div className="border-t px-4 py-4 bg-muted-dark">
             <PreorderListingPagination total={0} page={1} pageCount={1} />
           </div>
         </CardContent>
@@ -49,7 +49,7 @@ export default async function PreorderListingPage() {
             <Toolbar />
           </div>
           <DataTableError message="No data found" />
-          <div className="border-t px-4 py-4">
+          <div className="border-t px-4 py-4 bg-muted-dark">
             <PreorderListingPagination total={0} page={1} pageCount={1} />
           </div>
         </CardContent>
@@ -66,7 +66,7 @@ export default async function PreorderListingPage() {
 
         <PreorderTable preorders={preorders} />
 
-        <div className="border-t px-4 py-4">
+        <div className="border-t px-4 py-4 bg-muted-dark">
           <PreorderListingPagination
             total={preorders.meta.total}
             page={preorders.meta.page}

@@ -1,13 +1,8 @@
-"use server";
-
+import { PreorderDetails, PreorderFormSkeleton } from "@/components/custom";
 import { SiteConfig } from "@/constants/site.config";
 import { Metadata } from "next";
-import { getPreorderById } from "../../../(server)";
 import { Suspense } from "react";
-import { PreorderDetails } from "@/components/custom";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft } from "lucide-react";
+import { getPreorderById } from "../../../(server)";
 
 type Props = {
   params: Promise<{
@@ -26,7 +21,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  // Get the preorder if it exists
   const preorder = await getPreorderById(id);
 
   if (!preorder.ok) {
@@ -48,8 +42,8 @@ export default async function PreorderByIdPage({ params }: Props) {
   const { id } = await params;
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-8">
-      <Suspense fallback={<div>Loading...</div>}>
+    <div className="mx-auto flex min-h-screen w-full max-w-4xl flex-col gap-6 px-6 py-8">
+      <Suspense fallback={<PreorderFormSkeleton />}>
         <PreorderDetails id={id} />
       </Suspense>
     </div>

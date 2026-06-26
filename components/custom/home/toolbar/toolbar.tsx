@@ -3,7 +3,7 @@ import Filters from "./filters";
 
 export default function Toolbar() {
   return (
-    <div className="flex w-full items-center justify-between gap-4">
+    <div className="flex w-full items-center justify-between gap-4 flex-wrap">
       <StatusRadio />
 
       <Filters />

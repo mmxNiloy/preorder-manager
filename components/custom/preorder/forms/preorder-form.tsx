@@ -16,7 +16,7 @@ import PreorderFormFields, { PreorderFormType } from "./preorder-form-fields";
 import { Preorder, PreorderWhen } from "@/src/generated/prisma/browser";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ChevronLeft, Loader2 } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -25,7 +25,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import FormActions from "./form-actions";
 
 type Props = {
   data?: Preorder;
@@ -98,9 +98,9 @@ export default function PreorderForm({ data }: Props) {
         e.preventDefault();
         form.handleSubmit();
       }}
-      className="space-y-8"
+      className="flex flex-col gap-6"
     >
-      <div className="flex flex-row items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Link href="/" passHref>
           <Button type="button" variant="outline" disabled={loading}>
             <ChevronLeft />
@@ -108,59 +108,28 @@ export default function PreorderForm({ data }: Props) {
           </Button>
         </Link>
 
-        <div className="flex gap-4">
-          <Link href="/" passHref>
-            <Button type="button" variant="outline" disabled={loading}>
-              Cancel
-            </Button>
-          </Link>
-
-          <Button type="submit" disabled={loading}>
-            {loading ? (
-              <>
-                <Loader2 className="animate-spin" />
-                Saving...
-              </>
-            ) : (
-              <>Save Changes</>
-            )}
-          </Button>
-        </div>
+        <FormActions
+          loading={loading}
+          className="justify-start sm:justify-end"
+        />
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            <b>Preorder Details</b>
+      <Card className="py-0 shadow-sm">
+        <CardHeader className="border-b px-4 py-4 sm:px-6">
+          <CardTitle className="text-base font-semibold">
+            Preorder details
           </CardTitle>
           <CardDescription>
             These values appear in the preorders list.
           </CardDescription>
         </CardHeader>
 
-        <Separator />
-
-        <CardContent>
+        <CardContent className="p-0">
           <PreorderFormFields form={form as unknown as PreorderFormType} />
         </CardContent>
 
-        <CardFooter>
-          <Link href="/" passHref>
-            <Button type="button" variant="outline" disabled={loading}>
-              Cancel
-            </Button>
-          </Link>
-
-          <Button type="submit" disabled={loading}>
-            {loading ? (
-              <>
-                <Loader2 className="animate-spin" />
-                Saving...
-              </>
-            ) : (
-              <>Save Changes</>
-            )}
-          </Button>
+        <CardFooter className="flex justify-end gap-2 border-t px-4 py-4">
+          <FormActions loading={loading} />
         </CardFooter>
       </Card>
     </form>

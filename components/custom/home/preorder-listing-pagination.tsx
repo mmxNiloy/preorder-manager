@@ -34,6 +34,7 @@ export default function PreorderListingPagination({
         size="icon-sm"
         disabled={!canGoPrevious}
         onClick={() => setPage(page - 1)}
+        className="bg-muted-switch"
       >
         <ChevronLeft />
       </Button>
@@ -45,6 +46,7 @@ export default function PreorderListingPagination({
         size="icon-sm"
         disabled={!canGoNext}
         onClick={() => setPage(page + 1)}
+        className="bg-muted-switch"
       >
         <ChevronRight />
       </Button>

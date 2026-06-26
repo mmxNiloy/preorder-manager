@@ -100,63 +100,60 @@ function DataTableShell<TData, TValue>({
   const pageEnd = Math.min(currentPage * limit, totalItems);
 
   const tableContent = (
-  <div className="overflow-x-auto">
-    <Table className="w-full min-w-195">
-      <TableHeader className="border-b border-border/60">
-        {table.getHeaderGroups().map((headerGroup: HeaderGroup<TData>) => (
-          <TableRow
-            key={headerGroup.id}
-            className="border-border/70 hover:bg-transparent"
-          >
-            {headerGroup.headers.map((header: Header<TData, unknown>) => (
-              <TableHead
-                key={header.id}
-                className="px-4 py-3 text-left text-sm font-medium text-muted-foreground"
-              >
-                <TableHeaderCell>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
-                </TableHeaderCell>
-              </TableHead>
-            ))}
-          </TableRow>
-        ))}
-      </TableHeader>
-      <TableBody>
-        {table.getRowModel().rows?.length ? (
-          table.getRowModel().rows.map((row: Row<TData>) => (
+    <div className="overflow-x-auto">
+      <Table className="w-full min-w-195">
+        <TableHeader className="border-b border-border/60">
+          {table.getHeaderGroups().map((headerGroup: HeaderGroup<TData>) => (
             <TableRow
-              key={row.id}
-              className="border-b border-border/40 hover:bg-transparent"
-              data-state={row.getIsSelected() ? "selected" : undefined}
+              key={headerGroup.id}
+              className="border-border/70 bg-muted-dark hover:bg-transparent"
             >
-              {row.getVisibleCells().map((cell: Cell<TData, unknown>) => (
-                <TableCell
-                  key={cell.id}
-                  className="px-4 py-3.5 text-sm text-muted-foreground"
+              {headerGroup.headers.map((header: Header<TData, unknown>) => (
+                <TableHead
+                  key={header.id}
+                  className="px-4 py-3 text-left text-base font-semibold text-muted-foreground"
                 >
-                  {flexRender(
-                    cell.column.columnDef.cell,
-                    cell.getContext(),
-                  )}
-                </TableCell>
+                  <TableHeaderCell>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                  </TableHeaderCell>
+                </TableHead>
               ))}
             </TableRow>
-          ))
-        ) : (
-          <TableRow className="hover:bg-transparent">
-            <TableCell colSpan={columns.length} className="p-0">
-              <DataTableError message={emptyStateMessage} />
-            </TableCell>
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
-  </div>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row: Row<TData>) => (
+              <TableRow
+                key={row.id}
+                className="border-b border-border/40 hover:bg-transparent"
+                data-state={row.getIsSelected() ? "selected" : undefined}
+              >
+                {row.getVisibleCells().map((cell: Cell<TData, unknown>) => (
+                  <TableCell
+                    key={cell.id}
+                    className="px-4 py-3.5 text-sm text-muted-foreground"
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : (
+            <TableRow className="hover:bg-transparent">
+              <TableCell colSpan={columns.length} className="p-0">
+                <DataTableError message={emptyStateMessage} />
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
   );
 
   if (embedded) {

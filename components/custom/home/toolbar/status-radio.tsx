@@ -6,6 +6,8 @@ import { useQueryState } from "nuqs";
 import { useCallback, useMemo } from "react";
 
 export default function StatusRadio() {
+  const [, setPage] = useQueryState("page", searchParams.page);
+
   const [isActive, setIsActive] = useQueryState(
     "isActive",
     searchParams.isActive,
@@ -24,16 +26,15 @@ export default function StatusRadio() {
       } else {
         setIsActive(value === "active");
       }
+
+      setPage(1);
     },
-    [setIsActive],
+    [setIsActive, setPage],
   );
 
   return (
     <Tabs value={value} onValueChange={handleValueChange}>
-      <TabsList
-        variant="line"
-        className="h-auto gap-1 bg-transparent p-0"
-      >
+      <TabsList variant="line" className="h-auto gap-1 bg-transparent p-0">
         <TabsTrigger
           value="all"
           className="rounded-lg px-4 py-1.5 data-active:bg-muted data-active:shadow-none"

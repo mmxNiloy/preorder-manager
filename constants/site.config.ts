@@ -27,5 +27,11 @@ export const SiteConfig = {
       makeDescription: (preorder: Preorder) =>
         `View the preorder details for ${preorder.name}. Preorder starts at ${format(preorder.startsAt, "MMM d, yyyy hh:mm a")} and ends at ${preorder.endsAt ? format(preorder.endsAt, "MMM d, yyyy hh:mm a") : "N/A"}. This preorder was created at ${format(preorder.createdAt, "MMM d, yyyy hh:mm a")} and last updated at ${format(preorder.updatedAt, "MMM d, yyyy hh:mm a")}.`,
     },
+
+    notFound: {
+      title: "Page Not Found | Preorder Manager",
+      description:
+        "The page you are looking for does not exist. If you think this is an error, please contact the administrator.",
+    },
   },
 };

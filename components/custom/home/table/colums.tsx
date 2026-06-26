@@ -7,6 +7,7 @@ import { Actions } from "./actions";
 import DateTimeContainer from "./date-time-container";
 import EnumContainer from "./enum-container";
 import ToggleAction from "./actions/toggle-action";
+import NameCell from "./name-cell";
 
 export { PREORDER_TABLE_HEADERS } from "./headers";
 
@@ -16,7 +17,9 @@ export const columns: ColumnDef<Preorder>[] = [
     header: ({ table }) => (
       <Checkbox
         checked={table.getIsAllPageRowsSelected()}
-        indeterminate={table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()}
+        indeterminate={
+          table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()
+        }
         onCheckedChange={(value) =>
           table.toggleAllPageRowsSelected(value === true)
         }
@@ -36,9 +39,7 @@ export const columns: ColumnDef<Preorder>[] = [
   {
     accessorKey: "name",
     header: "Name",
-    cell: ({ row }) => (
-      <span className="font-semibold text-foreground">{row.original.name}</span>
-    ),
+    cell: ({ row }) => <NameCell name={row.original.name} />,
   },
   {
     accessorKey: "products",
@@ -66,12 +67,12 @@ export const columns: ColumnDef<Preorder>[] = [
   },
   {
     accessorKey: "isActive",
-    header: "",
+    header: "Status",
     cell: ({ row }) => <ToggleAction data={row.original} />,
   },
   {
     id: "actions",
-    header: "",
+    header: "Actions",
     cell: ({ row }) => <Actions id={row.original.id} />,
   },
 ];
