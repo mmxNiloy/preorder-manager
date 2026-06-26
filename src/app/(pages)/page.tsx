@@ -35,7 +35,9 @@ export default async function Home({ searchParams }: Props) {
       <div className="flex flex-row items-center justify-between">
         <h1 className="text-2xl font-semibold tracking-tight">Preorders</h1>
 
-        <Button render={<Link href="/preorder/new" />}>Create Preorder</Button>
+        <Link href="/preorder/new" passHref>
+          <Button>Create Preorder</Button>
+        </Link>
       </div>
 
       <Suspense key={key} fallback={<PreorderListingSkeleton />}>

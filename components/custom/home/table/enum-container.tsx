@@ -1,20 +1,24 @@
+import { cn } from "@/lib/utils";
 import { useMemo } from "react";
 
 type Props = {
   value: string | undefined | null;
 } & React.ComponentProps<"span">;
 
-export default function EnumContainer({ value, ...props }: Props) {
+export default function EnumContainer({ value, className, ...props }: Props) {
   const label = useMemo(() => {
     if (!value) return "-";
 
     const segments = value.split("_");
-    const capitalizedSegments = segments.map(
-      (segment) =>
-        segment.charAt(0).toUpperCase() + segment.slice(1).toLowerCase(),
-    );
-    return capitalizedSegments.join(" ");
+    return segments.join(" ");
   }, [value]);
 
-  return <span {...props}>{label}</span>;
+  return (
+    <span
+      {...props}
+      className={cn("lowercase first-letter:uppercase", className)}
+    >
+      {label}
+    </span>
+  );
 }

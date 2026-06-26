@@ -36,6 +36,7 @@ export const CreatePreorderSchema = z.object({
   preorderWhen: z.enum(PreorderWhenValues),
   startsAt: z.date(),
   endsAt: z.date().optional().nullable(),
+  isActive: z.boolean().optional(),
 });
 
 export type CreatePreorderDto = z.infer<typeof CreatePreorderSchema>;
@@ -46,6 +47,7 @@ export const emptyCreatePreorderDto: CreatePreorderDto = {
   preorderWhen: PreorderWhen.REGARDLESS_OF_STOCK,
   startsAt: new Date(),
   endsAt: null,
+  isActive: true,
 };
 
 export const UpdatePreorderSchema = CreatePreorderSchema.partial();

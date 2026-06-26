@@ -2,9 +2,12 @@
 
 import { SiteConfig } from "@/constants/site.config";
 import { Metadata } from "next";
-import { getPreorderById } from "../../(server)";
+import { getPreorderById } from "../../../(server)";
 import { Suspense } from "react";
 import { PreorderDetails } from "@/components/custom";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
 
 type Props = {
   params: Promise<{
@@ -45,8 +48,10 @@ export default async function PreorderByIdPage({ params }: Props) {
   const { id } = await params;
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <PreorderDetails id={id} />
-    </Suspense>
+    <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-8">
+      <Suspense fallback={<div>Loading...</div>}>
+        <PreorderDetails id={id} />
+      </Suspense>
+    </div>
   );
 }

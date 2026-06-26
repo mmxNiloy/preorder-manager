@@ -8,12 +8,24 @@ import {
   UpdatePreorderDto,
   UpdatePreorderSchema,
 } from "@/src/app/(server)";
-import { Preorder, PreorderWhen } from "@/src/generated/prisma/client";
 import { useForm } from "@tanstack/react-form";
 import { useRouter } from "next/navigation";
 import { useMemo, useTransition } from "react";
 import { toast } from "sonner";
 import PreorderFormFields, { PreorderFormType } from "./preorder-form-fields";
+import { Preorder, PreorderWhen } from "@/src/generated/prisma/browser";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ChevronLeft, Loader2 } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 type Props = {
   data?: Preorder;
@@ -50,13 +62,14 @@ export default function PreorderForm({ data }: Props) {
       preorderWhen: data?.preorderWhen || PreorderWhen.REGARDLESS_OF_STOCK,
       startsAt: data?.startsAt || new Date(),
       endsAt: data?.endsAt || null,
+      isActive: data?.isActive ?? true,
     } as UpdatePreorderDto,
     validators: {
       onSubmit: UpdatePreorderSchema,
     },
     onSubmit: ({ value }) => {
       startSubmit(async () => {
-        if (!data || data.id) {
+        if (!data || !data.id) {
           toast.error("Preorder not found");
           return;
         }
@@ -69,6 +82,7 @@ export default function PreorderForm({ data }: Props) {
         }
 
         toast.success(res.message);
+        router.push("/");
       });
     },
   });
@@ -84,8 +98,71 @@ export default function PreorderForm({ data }: Props) {
         e.preventDefault();
         form.handleSubmit();
       }}
+      className="space-y-8"
     >
-      <PreorderFormFields form={form as unknown as PreorderFormType} />
+      <div className="flex flex-row items-center justify-between">
+        <Link href="/" passHref>
+          <Button type="button" variant="outline" disabled={loading}>
+            <ChevronLeft />
+            Back
+          </Button>
+        </Link>
+
+        <div className="flex gap-4">
+          <Link href="/" passHref>
+            <Button type="button" variant="outline" disabled={loading}>
+              Cancel
+            </Button>
+          </Link>
+
+          <Button type="submit" disabled={loading}>
+            {loading ? (
+              <>
+                <Loader2 className="animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>Save Changes</>
+            )}
+          </Button>
+        </div>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            <b>Preorder Details</b>
+          </CardTitle>
+          <CardDescription>
+            These values appear in the preorders list.
+          </CardDescription>
+        </CardHeader>
+
+        <Separator />
+
+        <CardContent>
+          <PreorderFormFields form={form as unknown as PreorderFormType} />
+        </CardContent>
+
+        <CardFooter>
+          <Link href="/" passHref>
+            <Button type="button" variant="outline" disabled={loading}>
+              Cancel
+            </Button>
+          </Link>
+
+          <Button type="submit" disabled={loading}>
+            {loading ? (
+              <>
+                <Loader2 className="animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>Save Changes</>
+            )}
+          </Button>
+        </CardFooter>
+      </Card>
     </form>
   );
 }

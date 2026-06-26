@@ -43,6 +43,8 @@
 
   /* Custom colors */
   --color-muted-dark: var(--muted-dark);
+  --color-card-accent: var(--card-accent);
+  --color-muted-switch: var(--muted-switch);
 
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -89,6 +91,8 @@
 
   /* Custom colors */
   --muted-dark: oklch(0.9761 0 0);
+  --card-accent: oklch(0.9913 0.0013 286.38);
+  --muted-switch: #e5e7eb;
 }
 
 .dark {
@@ -126,6 +130,8 @@
 
   /* Custom colors */
   --muted-dark: oklch(0.9761 0 0);
+  --card-accent: oklch(0.9913 0.0013 286.38);
+  --muted-switch: #e5e7eb;
 }
 
 @layer base {
