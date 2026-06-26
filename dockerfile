@@ -18,6 +18,7 @@ RUN npm install -g pnpm@${PNPM_VERSION}
 FROM base AS deps
 
 COPY package.json pnpm-lock.yaml ./
+COPY prisma ./prisma
 
 RUN --mount=type=cache,target=/pnpm/store \
     pnpm install --frozen-lockfile
