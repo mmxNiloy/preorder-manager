@@ -25,7 +25,7 @@ RUN --mount=type=cache,target=/pnpm/store \
 
 # Approve packages that need build scripts.
 # See note below.
-RUN pnpm approve-builds
+RUN pnpm approve-builds *
 
 # Reinstall now that builds are approved.
 RUN --mount=type=cache,target=/pnpm/store \
