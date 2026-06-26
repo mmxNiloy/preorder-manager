@@ -48,10 +48,15 @@ ENV NODE_ENV=production
 COPY --from=build /usr/src/app/package.json ./
 COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/.next ./.next
-COPY --from=build /usr/src/app/public ./public
 
 USER node
 
 EXPOSE 3000
+
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+ENTRYPOINT ["docker-entrypoint.sh"]
 
 CMD ["pnpm", "run", "start"]
